@@ -1,0 +1,97 @@
+{% extends 'contents/base.html' %}
+
+{% block content %}
+<style>
+    input[type="text"], textarea {
+         width: 100%;
+         padding: 12px;
+         margin-bottom: 20px;
+         border: 1px solid #ccc;
+         border-radius: 4px;
+         box-sizing: border-box;
+         font-size: 16px;
+     }
+ </style>
+ <h2>Edit post</h2>
+ <form id="edit-post">
+     {% csrf_token %}
+     <label for="title">Title</label>
+     <textarea id="title" name="text" required></textarea><br>
+     <label for="content">Content</label>
+     <textarea id="content" name="content" required></textarea><br>
+
+     <button type="submit" class="save btn">Save</button>
+ </form>
+
+<div id="response-message"></div>
+
+<script>
+
+    // Show content on page using GET request
+    window.onload = async function() {
+        // Send GET request using fetch
+        try {
+            const access_token = '{{ access_token }}';
+            const response = await fetch('/dashboard/{{ pk }}/api/read/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                },
+            });
+
+            if (response.ok) {
+                data = await response.json();
+                document.getElementById('title').innerHTML = data.title;
+                document.getElementById('content').innerHTML = data.text;
+
+            } else {
+                const errorResponse = response.json();
+                document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('response-message').innerHTML = 'Something went wrong!';
+        }
+    };
+
+
+    // UPDATE operation on the database using PUT request
+    document.getElementById('edit-post').onsubmit = async function(event) {
+        event.preventDefault();
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        // Creating a JSON object
+        const updatedData = {
+            'title': title,
+            'text': content
+        };
+
+        // Send PUT request using fetch
+        try {
+            const access_token = '{{ access_token }}';
+            const response = await fetch('/dashboard/{{ pk }}/api/update/', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (response.ok) {
+                window.location.href = `/dashboard/post/{{ pk }}/`;
+                
+            } else {
+                const errorResponse = await response.json();
+                document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('response-message').innerHTML = 'Something went wrong!';
+        }
+    };
+</script>
+
+{% endblock %}
