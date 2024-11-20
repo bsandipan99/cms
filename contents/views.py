@@ -21,7 +21,6 @@ def authenticate_user( request ):
     if not access_token:
         return None, 'login'
 
-    from django.http import HttpRequest
     request_with_token = HttpRequest()
     request_with_token.META['HTTP_AUTHORIZATION'] = f'Bearer {access_token}'
 
@@ -29,7 +28,7 @@ def authenticate_user( request ):
 
     try:
         user, token = jwt_auth.authenticate(request_with_token)
-        return user, None  # Return user and token if successful
+        return user, None  # Return user if successful
     except AuthenticationFailed:
         return None, 'refresh'  # Invalid token, redirect to refresh
 

@@ -8,7 +8,6 @@ def login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        request.user.username = username
 
         # Send request to /api/token/ endpoint
         token_url = 'http://localhost:8000/api/token/'            
