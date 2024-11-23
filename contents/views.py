@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import PostSerializer
 from rest_framework import status
+from .filters import PostFilter
 
 def authenticate_user( request ):
     """
@@ -32,13 +33,13 @@ def authenticate_user( request ):
     except AuthenticationFailed:
         return None, 'refresh'  # Invalid token, redirect to refresh
 
-
 def dashboard( request ):
     user, redirect_url = authenticate_user(request)
+    access_token = request.session.get('access_token')
 
-    if user is not None:
+    if user:
         posts = Post.objects.filter( author=user )
-        return render(request, 'contents/dashboard.html', {'posts':posts})
+        return render(request, 'contents/dashboard.html', {'posts':posts, 'access_token':access_token})
     else:
         return redirect(redirect_url)
 
@@ -123,3 +124,14 @@ def delete_post(request, pk):
         return Response({}, status=status.HTTP_200_OK)
     except Post.DoesNotExist:
         return Response({'message': 'Invalid primary key'}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def filter_post(request):
+    """
+    Returns the filtered queryset from search parameters
+    """
+    postFilter = PostFilter(request.GET, queryset=Post.objects.all())
+    posts = postFilter.qs
+    serializer = PostSerializer(posts, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)

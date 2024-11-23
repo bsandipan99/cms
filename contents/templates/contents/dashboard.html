@@ -1,13 +1,116 @@
 {% extends 'contents/base.html' %}
 
 {% block content %}
-    {% for post in posts %}
-    <article class="post">
-        <time class="dashboard-date">
-            {{ post.published_date }}
-        </time>
-        <h2><a href="{% url 'post-detail' pk=post.pk%}">{{ post.title }}</a></h2>
-        <p>{{ post.text|linebreaksbr }}</p>
-    </article>
-    {% endfor %}
+
+    <form method="GET" id="filter-form" class="container">
+        <div class="d-flex align-items-center mb-4">
+            <h3 class="text-left mb-0" style="margin-top: 0; margin-right: 20px;">Search Posts</h3>
+            
+            <div class="row w-100">
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" id="title" name="title" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        <label for="text" class="form-label">Text</label>
+                        <input type="text" id="text" name="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <input type="submit" value="Submit" class="btn btn-secondary btn-dark">
+            </div>
+        </div>
+
+    </form>
+
+    <div class="mt-5" style="border-bottom: 3px solid gray; width: 100%; margin-left: 0;"></div>
+
+    <div id="postsContainer" class="mt-5">
+        {% for post in posts %}
+        <article class="post">
+            <time class="dashboard-date">
+                {{ post.published_date }}
+            </time>
+            <h2><a href="{% url 'post-detail' pk=post.pk%}">{{ post.title }}</a></h2>
+            <p>{{ post.text|linebreaksbr }}</p>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div id="response-message"></div>
+
+    <script>
+        // Get filtered post from database
+        document.getElementById('filter-form').addEventListener('submit', async function(event) {
+            event.preventDefault();  // Prevent the form from submitting normally
+
+            const formData = new FormData(event.target);
+            const params = new URLSearchParams(formData).toString();
+            const apiUrl = '/dashboard/api/filter';
+            const fullUrl = `${apiUrl}?${params}`;
+            
+            try {
+                const access_token = '{{ access_token }}';
+                const response = await fetch(fullUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`
+                    },
+                });
+
+                if (response.ok) {
+                    data = await response.json();
+                    const posts = Object.values(data);
+
+                    document.getElementById('postsContainer').innerHTML = '';
+
+                    posts.forEach(post => {
+                        // Create the article element for each post
+                        const postElement = document.createElement('article');
+                        postElement.classList.add('post');
+
+                        // Create and append the time element
+                        const published_date =  new Date(post.published_date);
+                        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'};
+                        const formattedDate = published_date.toLocaleString('en-US', options);
+                        const timeElement = document.createElement('time');
+                        timeElement.classList.add('dashboard-date');
+                        timeElement.textContent = formattedDate;
+                        postElement.appendChild(timeElement);
+
+                        // Create and append the h2 element with a link
+                        const h2Element = document.createElement('h2');
+                        const linkElement = document.createElement('a');
+                        linkElement.href = `/dashboard/post/${post.id}`;
+                        linkElement.textContent = post.title;
+                        h2Element.appendChild(linkElement);
+                        postElement.appendChild(h2Element);
+
+                        // Create and append the paragraph element with the post text
+                        const pElement = document.createElement('p');
+                        pElement.innerHTML = post.text.replace(/\n/g, '<br>');
+                        postElement.appendChild(pElement);
+
+                        // Append the post element to the container
+                        postsContainer.appendChild(postElement);
+                    });
+
+                } else {
+                    const errorResponse = response.json();
+                    document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response-message').innerHTML = 'Something went wrong!';
+            }
+
+        });
+
+    </script>
 {% endblock %}
