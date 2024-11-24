@@ -1,4 +1,4 @@
-{% extends 'contents/base.html' %}
+{% extends 'contents/post_header.html' %}
 
 {% block content %}
 <style>
@@ -12,16 +12,17 @@
          font-size: 16px;
      }
  </style>
- <h2>Edit post</h2>
- <form id="edit-post">
-     {% csrf_token %}
-     <label for="title">Title</label>
-     <textarea id="title" name="text" required></textarea><br>
-     <label for="content">Content</label>
-     <textarea id="content" name="content" required></textarea><br>
 
-     <button type="submit" class="save btn">Save</button>
- </form>
+<h2>Edit post</h2>
+<form id="edit-post">
+    {% csrf_token %}
+    <label for="title">Title</label>
+    <textarea id="title" name="text" required></textarea><br>
+    <label for="content">Content</label>
+    <textarea id="content" name="content" required></textarea><br>
+
+    <button type="submit" class="save btn">Save</button>
+</form>
 
 <div id="response-message"></div>
 
@@ -32,7 +33,7 @@
         // Send GET request using fetch
         try {
             const access_token = '{{ access_token }}';
-            const response = await fetch('/dashboard/{{ pk }}/api/read/', {
+            const response = await fetch('/post/{{ pk }}/api/read/', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,7 +72,7 @@
         // Send PUT request using fetch
         try {
             const access_token = '{{ access_token }}';
-            const response = await fetch('/dashboard/{{ pk }}/api/update/', {
+            const response = await fetch('/post/{{ pk }}/api/update/', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

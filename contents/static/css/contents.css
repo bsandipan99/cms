@@ -75,3 +75,15 @@ h4 {
     color: #FFFFFF;
     background-color: #005100;
 }
+
+.btn-primary,
+.btn-primary:visited {
+    color: #FFFFFF;
+    background: none;
+    border-color: #FFFFFF;
+}
+
+.btn-primary:hover {
+    color: #005100;
+    background-color: #FFFFFF;
+}

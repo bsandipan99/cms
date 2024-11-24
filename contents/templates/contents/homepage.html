@@ -1,0 +1,34 @@
+{% extends 'contents/base.html' %}
+
+{% block layout %}
+
+<header class="page-header">
+    <div class="d-flex align-items-center mb-4">
+        <div class="container d-flex justify-content-between align-items-center w-100">
+            <h1 class="m-0"><a href="{% url 'home' %}">Content Management System</a></h1>
+            <a href="{% url 'login' %}">
+                <input type="submit" value="Login" class="btn btn-primary btn-lg">
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <div class="row">
+        <div class="col">
+            <div id="postsContainer" class="mt-5">
+                {% for post in posts %}
+                <article class="post">
+                    <time class="dashboard-date">
+                        {{ post.published_date }}
+                    </time>
+                    <h2><a href="{% url 'post-detail' pk=post.pk%}">{{ post.title }}</a></h2>
+                    <p>{{ post.text|linebreaksbr }}</p>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

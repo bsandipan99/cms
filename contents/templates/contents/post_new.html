@@ -1,4 +1,4 @@
-{% extends 'contents/base.html' %}
+{% extends 'contents/post_header.html' %}
 
 {% block content %}
     <style>
@@ -40,7 +40,7 @@
             // Send POST request using fetch
             try {
                 const access_token = '{{ access_token }}';
-                const response = await fetch('/dashboard/api/create/', {
+                const response = await fetch('/post/api/create/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

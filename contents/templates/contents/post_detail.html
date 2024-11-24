@@ -1,84 +1,85 @@
-{% extends 'contents/base.html' %}
+{% extends 'contents/post_header.html' %}
 
 {% block content %}
-    <article class = "post">
-        <aside class="actions">
-            <a class="btn btn-secondary" href="{% url 'post-edit' pk=pk %}">
-                {% include './icons/pencil-fill.svg' %}
-            </a>
-            <a class="btn btn-trash" id="delete-btn">
-                {% include './icons/trash.svg' %}
-            </a>
-        </aside>
-        <h2 id="title"></h2>
-        <p id="text"></p>
-        <time class = "detail-date" id="published_date"></time>
-    </article>
+<article class = "post">
+    <aside class="actions">
+        <a class="btn btn-secondary" href="{% url 'post-edit' pk=pk %}">
+            {% include './icons/pencil-fill.svg' %}
+        </a>
+        <a class="btn btn-trash" id="delete-btn">
+            {% include './icons/trash.svg' %}
+        </a>
+    </aside>
+    <h2 id="title"></h2>
+    <p id="text"></p>
+    <time class = "detail-date" id="published_date"></time>
+</article>
 
-    <div id="response-message"></div>
+<div id="response-message"></div>
 
-    <script>
 
-        // Get the entire post from database
-        window.onload = async function() {
-            try {
-                const access_token = '{{ access_token }}';
-                const response = await fetch('/dashboard/{{ pk }}/api/read/', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${access_token}`
-                    },
-                });
+<script>
 
-                if (response.ok) {
-                    data = await response.json();
-                    const published_date =  new Date(data.published_date);
-                    const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'};
-                    const formattedDate = published_date.toLocaleString('en-US', options);
+    // Get the entire post from database
+    window.onload = async function() {
+        try {
+            const access_token = '{{ access_token }}';
+            const response = await fetch('/post/{{ pk }}/api/read/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                },
+            });
 
-                    document.getElementById('published_date').innerHTML = formattedDate;
-                    document.getElementById('title').innerHTML = data.title;
-                    document.getElementById('text').innerHTML = data.text;
+            if (response.ok) {
+                data = await response.json();
+                const published_date =  new Date(data.published_date);
+                const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'};
+                const formattedDate = published_date.toLocaleString('en-US', options);
 
-                } else {
-                    const errorResponse = response.json();
-                    document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('response-message').innerHTML = 'Something went wrong!';
+                document.getElementById('published_date').innerHTML = formattedDate;
+                document.getElementById('title').innerHTML = data.title;
+                document.getElementById('text').innerHTML = data.text;
+
+            } else {
+                const errorResponse = response.json();
+                document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
             }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('response-message').innerHTML = 'Something went wrong!';
+        }
 
-        };
+    };
 
 
-        // Delete post on clicking 'trash' icon
-        document.getElementById('delete-btn').addEventListener('click', async function(event) {
-            event.preventDefault();
+    // Delete post on clicking 'trash' icon
+    document.getElementById('delete-btn').addEventListener('click', async function(event) {
+        event.preventDefault();
 
-            try {
-                const access_token = '{{ access_token }}';
-                const response = await fetch('/dashboard/{{ pk }}/api/delete/', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${access_token}`
-                    },
-                });
+        try {
+            const access_token = '{{ access_token }}';
+            const response = await fetch('/post/{{ pk }}/api/delete/', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                },
+            });
 
-                if (response.ok) {
-                    window.location.href = `/dashboard/`;
-                } else {
-                    const errorResponse = await response.json();
-                    document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('response-message').innerHTML = 'Something went wrong!';
+            if (response.ok) {
+                window.location.href = `/dashboard/`;
+            } else {
+                const errorResponse = await response.json();
+                document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('response-message').innerHTML = 'Something went wrong!';
+        }
+    });
 
-    </script>
+</script>
 
 {% endblock %}

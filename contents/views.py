@@ -33,6 +33,10 @@ def authenticate_user( request ):
     except AuthenticationFailed:
         return None, 'refresh'  # Invalid token, redirect to refresh
 
+def home( request ):
+    posts = Post.objects.all()
+    return render(request, 'contents/homepage.html', {'posts':posts})
+
 def dashboard( request ):
     user, redirect_url = authenticate_user(request)
     access_token = request.session.get('access_token')
@@ -44,12 +48,12 @@ def dashboard( request ):
         return redirect(redirect_url)
 
 
-def post_content( request ):
+def post_new( request ):
     access_token = request.session.get('access_token')
     if not access_token:
         return redirect('login')
 
-    return render(request, 'contents/post_content.html', {'access_token':access_token})
+    return render(request, 'contents/post_new.html', {'access_token':access_token})
 
 
 def post_detail( request, pk ):

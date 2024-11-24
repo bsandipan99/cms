@@ -3,6 +3,7 @@ from .models import Profile
 from .forms import ProfileForm
 import requests
 from contents.models import Post
+from django.contrib.auth import logout
 
 def login(request):
     if request.method == 'POST':
@@ -26,6 +27,9 @@ def login(request):
 
     return render(request,'users/login.html')
 
+def logout_view(request):
+    logout(request)
+    return redirect('login')
 
 def register(request):
     if request.method == 'POST':
