@@ -4,6 +4,7 @@ from .forms import ProfileForm
 import requests
 from contents.models import Post
 from django.contrib.auth import logout
+import os
 
 def login(request):
     if request.method == 'POST':
@@ -11,7 +12,7 @@ def login(request):
         password = request.POST['password']
 
         # Send request to /api/token/ endpoint
-        token_url = 'http://localhost:8000/api/token/'            
+        token_url = os.getenv('TOKEN_URL', 'http://localhost:8000/api/token/')
         response = requests.post(token_url, data={'username':username, 'password':password})
 
         if response.status_code == 200:
@@ -48,7 +49,7 @@ def refresh(request):
         return redirect('login')
 
     # Send the refresh token to fetch access token
-    refresh_url = 'http://localhost:8000/api/token/refresh/'
+    refresh_url = os.getenv('REFRESH_URL', 'http://localhost:8000/api/token/refresh/')
     response = requests.post(refresh_url,data={'refresh':refresh_token})
 
     if response.status_code == 200:
