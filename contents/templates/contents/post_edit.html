@@ -82,7 +82,7 @@
             });
 
             if (response.ok) {
-                window.location.href = `/dashboard/post/{{ pk }}/`;
+                window.location.href = `/post/{{ pk }}/`;
                 
             } else {
                 const errorResponse = await response.json();

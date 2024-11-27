@@ -69,7 +69,7 @@
             });
 
             if (response.ok) {
-                window.location.href = `/dashboard/`;
+                window.location.href = `/post/`;
             } else {
                 const errorResponse = await response.json();
                 document.getElementById('response-message').innerHTML = `Error: ${errorResponse.detail}`;
