@@ -87,7 +87,7 @@
                     // Create and append the h2 element with a link
                     const h2Element = document.createElement('h2');
                     const linkElement = document.createElement('a');
-                    linkElement.href = `/dashboard/post/${post.id}`;
+                    linkElement.href = `/post/${post.id}`;
                     linkElement.textContent = post.title;
                     h2Element.appendChild(linkElement);
                     postElement.appendChild(h2Element);
